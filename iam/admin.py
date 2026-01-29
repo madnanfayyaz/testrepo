@@ -13,6 +13,7 @@ from .models import AppUser, Role, Permission, RolePermission, UserRole
 class UserRoleInline(admin.TabularInline):
     model = UserRole
     extra = 0
+    fk_name = 'user'  # Specify which FK to use
     fields = ['role', 'scope_type', 'scope_id', 'assigned_at']
     readonly_fields = ['assigned_at']
 
