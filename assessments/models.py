@@ -303,7 +303,7 @@ class Response(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'response'
+        db_table = 'assessment_response'  # Changed from 'response'
 
 
 class ResponseVersion(models.Model):
@@ -313,10 +313,10 @@ class ResponseVersion(models.Model):
     response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name='versions')
     selected_value = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        db_table = 'response_version'
+        db_table = 'assessment_response_version'  # Changed from 'response_version'
 
 
 class QuestionComment(models.Model):
