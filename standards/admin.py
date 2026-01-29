@@ -221,7 +221,7 @@ class ControlMappingAdmin(admin.ModelAdmin):
 
 @admin.register(TenantControlExtension)
 class TenantControlExtensionAdmin(admin.ModelAdmin):
-    list_display = ['custom_code', 'title_short', 'base_control_display', 'status', 'tenant', 'owner_user']
+    list_display = ['custom_code', 'title_short', 'base_control_display', 'status', 'tenant', 'owner_user_display']
     list_filter = ['status', 'tenant']
     search_fields = ['custom_code', 'title', 'description']
     readonly_fields = ['id', 'created_at', 'updated_at']
@@ -238,6 +238,10 @@ class TenantControlExtensionAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+    def owner_user_display(self, obj):
+        return obj.owner_user if hasattr(obj, 'owner_user') else '-'
+    owner_user_display.short_description = 'Owner'
     
     def title_short(self, obj):
         if len(obj.title) > 50:
