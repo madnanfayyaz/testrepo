@@ -28,6 +28,8 @@ class AppUser(AbstractUser):
         'tenancy.Tenant',
         on_delete=models.CASCADE,
         related_name='users',
+        null=True,
+        blank=True,
         help_text="Tenant this user belongs to"
     )
     # email inherited from AbstractUser, but we'll make it unique per tenant
