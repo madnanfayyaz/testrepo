@@ -3,9 +3,28 @@ import os, dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "any-long-random-string")
 DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(",")
+
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS", 
+    "grc-railway-ready.onrender.com,localhost,127.0.0.1"
+).split(",")
+
 # CSRF Settings for development
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost:8000,http://127.0.0.1:8000").split(",")
+
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = []
+csrf_origins = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+if csrf_origins:
+    CSRF_TRUSTED_ORIGINS = csrf_origins.split(",")
+else:
+    # Default trusted origins
+    CSRF_TRUSTED_ORIGINS = [
+        "https://grc-railway-ready.onrender.com",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+    ]
+
+
 # For development only - disable CSRF for local testing
 if DEBUG:
     CSRF_COOKIE_SECURE = False
