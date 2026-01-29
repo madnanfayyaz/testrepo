@@ -179,7 +179,7 @@ class Assignment(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-   tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_assignments')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_assignments')
     assessment_question = models.ForeignKey(AssessmentQuestion, on_delete=models.CASCADE, related_name='assignments')
     assigned_to = models.ForeignKey('iam.AppUser', on_delete=models.CASCADE, related_name='question_assignments')
     assigned_by = models.ForeignKey('iam.AppUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_questions')
