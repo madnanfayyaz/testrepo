@@ -21,7 +21,7 @@ class Response(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_responses')
     assessment = models.ForeignKey('assessments.Assessment', on_delete=models.CASCADE, related_name='responses')
     assessment_question = models.ForeignKey('assessments.AssessmentQuestion', on_delete=models.CASCADE, related_name='responses')
     
@@ -127,7 +127,7 @@ class ResponseReview(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='response_reviews')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_reviews')
     response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name='reviews')
     reviewer_user = models.ForeignKey('iam.AppUser', on_delete=models.SET_NULL, null=True, related_name='reviews_conducted')
     decision = models.CharField(max_length=50, choices=DECISION_CHOICES, default='pending')
@@ -145,7 +145,7 @@ class ResponseReview(models.Model):
 class ResponseScoreRule(models.Model):
     """Custom scoring rules"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='score_rules')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_score_rules')
     control_node = models.ForeignKey('standards.ControlNode', on_delete=models.CASCADE, related_name='score_rules')
     weight_multiplier = models.DecimalField(max_digits=5, decimal_places=2, default=1.0)
     description = models.TextField(blank=True)
@@ -177,7 +177,7 @@ class Evidence(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='evidence')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_evidence')
     assessment = models.ForeignKey('assessments.Assessment', on_delete=models.CASCADE, related_name='evidence')
     
     # File info
@@ -213,7 +213,7 @@ class Evidence(models.Model):
 class EvidenceTag(models.Model):
     """Tags for evidence"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='evidence_tags')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_evidence_tags')
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE, related_name='tags')
     tag = models.CharField(max_length=100)
     
@@ -228,7 +228,7 @@ class EvidenceTag(models.Model):
 class EvidenceValidation(models.Model):
     """Validation history"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='evidence_validations')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_evidence_validations')
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE, related_name='validations')
     validator_user = models.ForeignKey('iam.AppUser', on_delete=models.SET_NULL, null=True)
     is_valid = models.BooleanField()
@@ -246,7 +246,7 @@ class EvidenceValidation(models.Model):
 class ResponseEvidence(models.Model):
     """Link responses to evidence"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='response_evidence_links')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='responses_evidence_links')
     response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name='evidence_links')
     evidence = models.ForeignKey(Evidence, on_delete=models.CASCADE, related_name='response_links')
     linked_at = models.DateTimeField(auto_now_add=True)
