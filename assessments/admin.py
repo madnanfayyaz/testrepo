@@ -44,4 +44,5 @@ class AssignmentAdmin(admin.ModelAdmin):
     list_filter = ['status', 'assessment']
     
     def assignee(self, obj):
-        return obj.assigned_to_user or obj.assigned_to_bu
+        return obj.assigned_to
+    assignee.short_description = 'Assigned To'
