@@ -29,9 +29,9 @@ class AssessmentScopeAdmin(admin.ModelAdmin):
 
 @admin.register(AssessmentQuestion)
 class AssessmentQuestionAdmin(admin.ModelAdmin):
-    list_display = ['code', 'assessment', 'question_short', 'is_mandatory']
+    list_display = ['question_code', 'assessment', 'question_short', 'is_mandatory']
     list_filter = ['assessment', 'is_mandatory']
-    search_fields = ['code', 'question_text']
+    search_fields = ['question_code', 'question_text']
     
     def question_short(self, obj):
         return obj.question_text[:60] + '...'
@@ -40,8 +40,13 @@ class AssessmentQuestionAdmin(admin.ModelAdmin):
 
 @admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ['assessment', 'assignee', 'control_node', 'status', 'due_date']
-    list_filter = ['status', 'assessment']
+    list_display = ['assessment_display', 'assignee', 'status', 'due_date']
+    list_filter = ['status']
+    search_fields = ['assessment_question__question_code', 'assigned_to__username']
+    
+    def assessment_display(self, obj):
+        return obj.assessment_question.assessment
+    assessment_display.short_description = 'Assessment'
     
     def assignee(self, obj):
         return obj.assigned_to
