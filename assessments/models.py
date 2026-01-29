@@ -81,7 +81,7 @@ class AssessmentScope(models.Model):
     Defines which controls are in scope for an assessment
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_scopes')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='scopes')
     control_node = models.ForeignKey('standards.ControlNode', on_delete=models.CASCADE)
     include_children = models.BooleanField(default=True, help_text="Include child controls")
@@ -101,7 +101,7 @@ class AssessmentEntityScope(models.Model):
     Maps assessments to specific entities (departments, systems, etc.)
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_entity_scopes')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='entity_scopes')
     
     # Entity can be department, system, region, etc.
@@ -125,7 +125,7 @@ class AssessmentQuestion(models.Model):
     Snapshot of question at assessment creation time
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_questions')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_questions')
     
     # Link to source question (if from question bank)
@@ -179,7 +179,7 @@ class Assignment(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+   tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_assignments')
     assessment_question = models.ForeignKey(AssessmentQuestion, on_delete=models.CASCADE, related_name='assignments')
     assigned_to = models.ForeignKey('iam.AppUser', on_delete=models.CASCADE, related_name='question_assignments')
     assigned_by = models.ForeignKey('iam.AppUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_questions')
@@ -209,7 +209,7 @@ class AssessmentProgress(models.Model):
     Tracks overall assessment progress and metrics
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_progresses')
     assessment = models.OneToOneField(Assessment, on_delete=models.CASCADE, related_name='progress')
     
     total_questions = models.IntegerField(default=0)
@@ -233,7 +233,7 @@ class AssessmentEvidence(models.Model):
     Evidence attached at assessment level (not question-specific)
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_evidence_items')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_evidence')
     
     title = models.CharField(max_length=255)
@@ -255,7 +255,7 @@ class AssessmentComment(models.Model):
     Comments on assessment (not question-specific)
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_comments_items')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_comments')
     
     comment_text = models.TextField()
@@ -296,7 +296,7 @@ class Response(models.Model):
     This is kept for backward compatibility
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_responses')
     assessment_question = models.OneToOneField(AssessmentQuestion, on_delete=models.CASCADE, related_name='response')
     selected_value = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=50, default='DRAFT')
@@ -309,7 +309,7 @@ class Response(models.Model):
 class ResponseVersion(models.Model):
     """Response version history"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_response_versions')
     response = models.ForeignKey(Response, on_delete=models.CASCADE, related_name='versions')
     selected_value = models.IntegerField(null=True, blank=True)
     status = models.CharField(max_length=50)
@@ -322,7 +322,7 @@ class ResponseVersion(models.Model):
 class QuestionComment(models.Model):
     """Comments on assessment questions"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='assessment_question_comments')
     assessment_question = models.ForeignKey(AssessmentQuestion, on_delete=models.CASCADE, related_name='comments')
     author = models.CharField(max_length=255, blank=True, default='')
     comment_text = models.TextField()
