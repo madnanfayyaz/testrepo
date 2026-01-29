@@ -3,7 +3,7 @@ from tenancy.models import Tenant
 from standards.models import StandardVersion, ControlNode as Control
 
 class Question(models.Model):
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='questions_questions')
     code = models.CharField(max_length=100, blank=True, default="")
     text = models.TextField()
     guidance = models.TextField(blank=True, default="")
@@ -15,7 +15,7 @@ class Question(models.Model):
         return self.code or str(self.id)
 
 class QuestionOption(models.Model):
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='questions_options')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="options")
     value = models.IntegerField()  # 1-5
     label = models.CharField(max_length=255)
@@ -24,7 +24,7 @@ class QuestionOption(models.Model):
         unique_together = ("tenant", "question", "value")
 
 class ControlQuestionMap(models.Model):
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='questions_control_maps')
     standard_version = models.ForeignKey(StandardVersion, on_delete=models.CASCADE)
     control = models.ForeignKey(Control, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
