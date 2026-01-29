@@ -68,10 +68,9 @@ class QuestionBankOptionAdmin(admin.ModelAdmin):
 @admin.register(ControlQuestionMap)
 class ControlQuestionMapAdmin(admin.ModelAdmin):
     list_display = [
-        'control_code', 'question_code', 'is_mandatory',
-        'pptdf_display', 'display_order'
+        'control_code', 'question_code', 'rationale_short'
     ]
-    list_filter = ['is_mandatory', 'tenant']
+    list_filter = ['tenant']
     search_fields = [
         'control_node__code', 'control_node__title',
         'question_bank__code', 'question_bank__question_text'
@@ -83,11 +82,7 @@ class ControlQuestionMapAdmin(admin.ModelAdmin):
             'fields': ('tenant', 'control_node', 'question_bank')
         }),
         ('Configuration', {
-            'fields': ('is_mandatory', 'display_order', 'guidance')
-        }),
-        ('Compliance Attributes', {
-            'fields': ('pptdf_code', 'erl_refs', 'suggested_evidence_tags'),
-            'classes': ('collapse',)
+            'fields': ('rationale', 'criticality_override')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -103,23 +98,16 @@ class ControlQuestionMapAdmin(admin.ModelAdmin):
         return obj.question_bank.code
     question_code.short_description = 'Question'
     
-    def pptdf_display(self, obj):
-        pptdf = obj.get_effective_pptdf()
-        if pptdf:
-            return format_html('<span style="background: #e3f2fd; padding: 2px 6px; border-radius: 3px;">{}</span>', pptdf)
+    def rationale_short(self, obj):
+        if obj.rationale:
+            return obj.rationale[:50] + '...' if len(obj.rationale) > 50 else obj.rationale
         return '-'
-    pptdf_display.short_description = 'PPTDF'
-
+    rationale_short.short_description = 'Rationale'
 
 @admin.register(QuestionApplicabilityRule)
 class QuestionApplicabilityRuleAdmin(admin.ModelAdmin):
     list_display = [
-        'question_bank', 'rule_type', 'depends_on_question',
-        'operator', 'value_display'
+        'question_bank', 'rule_type', 'rule_value', 'is_required'
     ]
-    list_filter = ['rule_type', 'operator']
-    search_fields = ['question_bank__code', 'depends_on_question__code']
-    
-    def value_display(self, obj):
-        return obj.value_text or obj.value_numeric or '-'
-    value_display.short_description = 'Value'
+    list_filter = ['rule_type', 'is_required']
+    search_fields = ['question_bank__code', 'rule_value']
