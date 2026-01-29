@@ -26,7 +26,7 @@ class QuestionBank(models.Model):
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='question_bank_questions')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='questionbank_questions')
     
     code = models.CharField(max_length=50, help_text="Unique question code (e.g., Q-POL-001)")
     question_text = models.TextField(help_text="The actual question")
@@ -98,7 +98,7 @@ class ControlQuestionMap(models.Model):
     Maps questions to compliance controls
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='question_bank_control_maps')
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='questionbank_control_maps')
     control_node = models.ForeignKey('standards.ControlNode', on_delete=models.CASCADE, related_name='question_mappings')
     question_bank = models.ForeignKey(QuestionBank, on_delete=models.CASCADE, related_name='control_mappings')
     
@@ -125,7 +125,7 @@ class QuestionApplicabilityRule(models.Model):
     Rules for when questions apply
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE)
+    tenant = models.ForeignKey('tenancy.Tenant', on_delete=models.CASCADE, related_name='questionbank_applicability_rules')
     question_bank = models.ForeignKey(QuestionBank, on_delete=models.CASCADE, related_name='applicability_rules')
     
     rule_type = models.CharField(max_length=50, help_text="org_type, asset_type, etc.")
