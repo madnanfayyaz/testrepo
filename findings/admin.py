@@ -75,20 +75,34 @@ class FindingAdmin(admin.ModelAdmin):
 class RemediationActionAdmin(admin.ModelAdmin):
     list_display = [
         'finding', 'title_short', 'priority_display', 'status',
-        'owner_display', 'target_date_display', 'progress'
+        'owner_display', 'target_date_display', 'progress_display'
     ]
-    list_filter = ['priority', 'status']
+    list_filter = ['status']
     search_fields = ['title', 'description']
     
     def title_short(self, obj):
         return obj.title[:50] + '...' if len(obj.title) > 50 else obj.title
     title_short.short_description = 'Title'
     
-    def progress(self, obj):
-        pct = obj.get_progress_percentage()
-        color = 'green' if pct >= 75 else 'orange' if pct >= 50 else 'red'
-        return format_html('<span style="color: {};">{:.1f}%</span>', color, pct)
-    progress.short_description = 'Progress'
+    def priority_display(self, obj):
+        return obj.priority if hasattr(obj, 'priority') else '-'
+    priority_display.short_description = 'Priority'
+    
+    def owner_display(self, obj):
+        return obj.owner if hasattr(obj, 'owner') else '-'
+    owner_display.short_description = 'Owner'
+    
+    def target_date_display(self, obj):
+        return obj.target_date if hasattr(obj, 'target_date') else '-'
+    target_date_display.short_description = 'Target Date'
+    
+    def progress_display(self, obj):
+        if hasattr(obj, 'get_progress_percentage'):
+            pct = obj.get_progress_percentage()
+            color = 'green' if pct >= 75 else 'orange' if pct >= 50 else 'red'
+            return format_html('<span style="color: {};">{:.1f}%</span>', color, pct)
+        return '-'
+    progress_display.short_description = 'Progress'
     
     def priority_display(self, obj):
         if obj.priority:
@@ -121,8 +135,28 @@ class RemediationTaskAdmin(admin.ModelAdmin):
 @admin.register(RiskAcceptance)
 class RiskAcceptanceAdmin(admin.ModelAdmin):
     list_display = [
-        'finding', 'status', 'requested_by',
-        'approved_by', 'requested_date', 'expiry_date'
+        'finding', 'status_display', 'requested_by_display',
+        'approved_by_display', 'requested_date_display', 'expiry_date_display'
     ]
-    list_filter = ['status']
-    readonly_fields = ['requested_date', 'approved_date']
+    list_filter = ['status'] if hasattr(RiskAcceptance, 'status') else []
+    readonly_fields = ['requested_date', 'approved_date'] if hasattr(RiskAcceptance, 'requested_date') else []
+    
+    def status_display(self, obj):
+        return obj.status if hasattr(obj, 'status') else '-'
+    status_display.short_description = 'Status'
+    
+    def requested_by_display(self, obj):
+        return obj.requested_by if hasattr(obj, 'requested_by') else '-'
+    requested_by_display.short_description = 'Requested By'
+    
+    def approved_by_display(self, obj):
+        return obj.approved_by if hasattr(obj, 'approved_by') else '-'
+    approved_by_display.short_description = 'Approved By'
+    
+    def requested_date_display(self, obj):
+        return obj.requested_date if hasattr(obj, 'requested_date') else '-'
+    requested_date_display.short_description = 'Requested Date'
+    
+    def expiry_date_display(self, obj):
+        return obj.expiry_date if hasattr(obj, 'expiry_date') else '-'
+    expiry_date_display.short_description = 'Expiry Date'
